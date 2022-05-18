@@ -23,7 +23,6 @@ async function run() {
         console.log('DB CONNECTED');
         app.post('/allproducts', async (req, res) => {
             const products = req.body;
-            console.log(products);
             const result = await smartPhoneCollection.insertOne(products);
             res.send('inserted done')
         })
@@ -43,9 +42,7 @@ async function run() {
             const quantity = req.body.quantity;
             const deliveryQuantity = req.body.delivery;
             const updateInput = req.body.updateInput;
-            console.log(updateInput);
             const filter = { _id: ObjectId(id) };
-            console.log(quantity);
             const options = { upsert: true };
             let updateDoc;
             if (deliveryQuantity === 'delivered') {
@@ -63,15 +60,20 @@ async function run() {
                 };
             }
             const result = await smartPhoneCollection.updateOne(filter, updateDoc, options);
-            console.log(result.acknowledged);
             res.send(result.acknowledged);
         })
         app.delete('/manage', async (req, res) => {
             const id = req.query.id;
             const query = { _id: ObjectId(id) }
             const result = await smartPhoneCollection.deleteOne(query);
-            console.log(result);
             res.send(result.acknowledged);
+        })
+        app.get('/myitems', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = smartPhoneCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
         })
 
 
