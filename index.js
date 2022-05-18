@@ -34,12 +34,46 @@ async function run() {
         })
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const query = { _id: ObjectId(id) }
-            const result = smartPhoneCollection.findOne(query);
+            const result = await smartPhoneCollection.findOne(query);
             res.send(result);
-            console.log(result);
         })
+        app.put('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const quantity = req.body.quantity;
+            const deliveryQuantity = req.body.delivery;
+            const updateInput = req.body.updateInput;
+            console.log(updateInput);
+            const filter = { _id: ObjectId(id) };
+            console.log(quantity);
+            const options = { upsert: true };
+            let updateDoc;
+            if (deliveryQuantity === 'delivered') {
+                updateDoc = {
+                    $set: {
+                        quantity: quantity - 1
+                    },
+                };
+            }
+            else {
+                updateDoc = {
+                    $set: {
+                        quantity: quantity + updateInput
+                    },
+                };
+            }
+            const result = await smartPhoneCollection.updateOne(filter, updateDoc, options);
+            console.log(result.acknowledged);
+            res.send(result.acknowledged);
+        })
+        app.delete('/manage', async (req, res) => {
+            const id = req.query.id;
+            const query = { _id: ObjectId(id) }
+            const result = await smartPhoneCollection.deleteOne(query);
+            console.log(result);
+            res.send(result.acknowledged);
+        })
+
 
 
     } finally {
