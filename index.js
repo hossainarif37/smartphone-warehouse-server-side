@@ -23,7 +23,8 @@ async function run() {
         app.post('/allproducts', async (req, res) => {
             const products = req.body;
             const result = await smartPhoneCollection.insertOne(products);
-            res.send('inserted done')
+            console.log(result);
+            res.send(result.acknowledged)
         })
         app.get('/allproducts', async (req, res) => {
             const cursor = smartPhoneCollection.find({});
